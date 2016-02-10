@@ -2,6 +2,9 @@
 ssh pi@grovepi
 cd .node-red
 
+sudo apt-get install libasound2-dev
+
+npm install speaker
 npm install https://github.com/O-Hahn/node-red-contrib-furby.git
 
 node-red-pi --max-old-space-size=128 -v
