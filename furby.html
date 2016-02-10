@@ -1,0 +1,90 @@
+<!--
+  Copyright 2015 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  Authors:
+     - Olaf Hahn
+-->
+
+
+<!-- Furby Pi speak Output Node -->
+<script type="text/x-red" data-template-name="furby speak output">
+    <div class="form-row" id="furby-board-row">
+        <label for="node-input-board"><i class="fa fa-cogs"></i> Board</label>
+         <input type="text" id="node-input-board">
+    </div>
+    <div class="form-row node-input-filename">
+         <label for="node-input-filename"><i class="fa fa-file"></i> Filename</label>
+         <input type="text" id="node-input-filename">
+    </div>
+    <div class="form-row" id="furby-format-row">
+        <label for="node-input-format"><i class="fa fa-tags"></i> Sound Format </label>
+        <select id="node-input-format">
+            <option value="wav">WAV</option>
+            <option value="ogg">OGG</option>
+            <option value="mp3">MP3</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="furby speak output">
+    <p>Furby speakt output expects in <b>msg.payload</b> the file name with path to the outputfile. 
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('furby speak output',{
+        category: 'FurbyPi',
+        color: '#C7E9C0',
+        defaults: {
+            board: {type:"board-config", required:true},
+            name: {value:""},
+            filename: {value:""},
+            format: {value:"wav", required: true}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "furby.png",
+        label: function() {
+            return this.name||"furby speak output";
+        }
+    });
+</script>
+<!-- End of Furby Pi speak Output Node -->
+
+
+<!-- Furby Pi Board-Config Node -->
+<script type="text/javascript">
+    RED.nodes.registerType('board-config',{
+        category: 'config',
+        defaults: {
+            board: {value:"0", required:true}
+        },
+        label: function() {
+            return this.board;
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="board-config">
+    <div class="form-row">
+        <label for="node-config-input-board"><i class="icon-bookmark"></i>FurbyPi Board</label>
+        <select id="node-config-input-board">
+            <option value="FurbyPi">Connected FurbyPi Board</option>
+        </select>
+    </div>
+</script>
+<!-- End of Furby Pi Board-Config Node -->
