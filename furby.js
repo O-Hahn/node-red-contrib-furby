@@ -34,6 +34,7 @@ module.exports = function(RED) {
        var node = this;
 
        if(node.boardConfig){
+    	   
          // Board has been initialised
          if(!node.boardConfig.board){
            node.boardConfig.board = new FurbyPiBoard();
