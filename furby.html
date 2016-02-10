@@ -23,7 +23,7 @@
         <label for="node-input-board"><i class="fa fa-cogs"></i> Board</label>
          <input type="text" id="node-input-board">
     </div>
-    <div class="form-row node-input-filename">
+    <div class="form-row" id="furby-filename-row">
          <label for="node-input-filename"><i class="fa fa-file"></i> Filename</label>
          <input type="text" id="node-input-filename">
     </div>
@@ -47,7 +47,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('furby speak output',{
-        category: 'FurbyPi',
+        category: 'Furby-Pi',
         color: '#C7E9C0',
         defaults: {
             board: {type:"board-config", required:true},
