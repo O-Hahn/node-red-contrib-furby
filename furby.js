@@ -40,8 +40,8 @@ module.exports = function(RED) {
          }
 
          this.on('input', function(msg) {
-              node.boardConfig.board.SpeakOutput(this.format, this.filename);
-              node.log("Speak out Loud:" + this.filename);
+              node.boardConfig.board.SpeakOutput(msg, this.format, this.filename);
+              node.log("Speak out Loud: " + this.filename);
           });
 
          this.on('close', function(done) {
