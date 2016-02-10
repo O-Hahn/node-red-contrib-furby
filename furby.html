@@ -58,7 +58,7 @@
         outputs:0,
         icon: "furby.png",
         label: function() {
-            return this.name||"furby speak output node";
+            return this.name || "furby speak output node";
         }
     });
 </script>
@@ -66,24 +66,30 @@
 
 
 <!-- Furby Pi Board-Config Node -->
+<script type="text/x-red" data-template-name="furby-config">
+    <div class="form-row">
+        <label for="node-config-input-boardtype"><i class="icon-bookmark"></i>FurbyPi Board</label>
+        <select id="node-config-input-boardtype">
+            <option value="FurbyPi"> FurbyPi Board</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+</script>
+
 <script type="text/javascript">
     RED.nodes.registerType('furby-config',{
         category: 'config',
         defaults: {
-            board: {value:"0", required:true}
+            boardtype: {value:"0", required:true},
+            name: {value:""}
         },
         label: function() {
-            return this.board;
+            return this.name || this.board || "FurbyPi Board";
         }
     });
 </script>
 
-<script type="text/x-red" data-template-name="furby-config">
-    <div class="form-row">
-        <label for="node-config-input-board"><i class="icon-bookmark"></i>FurbyPi Board</label>
-        <select id="node-config-input-board">
-            <option value="FurbyPi">Connected FurbyPi Board</option>
-        </select>
-    </div>
-</script>
 <!-- End of Furby Pi Board-Config Node -->

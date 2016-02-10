@@ -60,9 +60,8 @@ module.exports = function(RED) {
        // Create this node
        RED.nodes.createNode(this,n);
        
-       this.boardType = n.boardType;
+       this.boardType = n.boardtype;
        this.name = n.name;
-       this.usedPins = [];
    }
    RED.nodes.registerType("furby-config",FurbyPiConfigNode);
 }
