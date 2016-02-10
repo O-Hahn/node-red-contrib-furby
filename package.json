@@ -12,7 +12,7 @@
         "test": "echo \"Error: no test specified\" && exit 1"
      },
 	 "dependencies": {
-	 	"node-red-bluemix-nodes":"0.",
+	 	"node-red-bluemix-nodes":"0.x",
 	 	"node-red-contrib-scx-ibmiotapp":"0.x",
 	 	"node-red-contrib-watson-developer-cloud-nodes" : "git://github.com/watson-developer-cloud/node-red-nodes.git"
   	 },
