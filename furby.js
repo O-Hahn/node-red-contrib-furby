@@ -53,7 +53,7 @@ module.exports = function(RED) {
          node.error("Node has no configuration!");
        }
     }
-    RED.nodes.registerType("fruby speak output",FurbyPiSpeakOutputNode);
+    RED.nodes.registerType("furby speak output",FurbyPiSpeakOutputNode);
 
     // FurbyPi Configuration Node 
     function FurbyPiConfigNode(n) {
