@@ -27,9 +27,14 @@ module.exports = function(RED) {
         
         // Retrieve the board-config node
        this.boardConfig = RED.nodes.getNode(config.board);
-       this.format = config.format;
-       this.filename = config.filename;
-       this.log("Furby Pi Speak Output: Config:" + this.name +", Format:" + this.format);
+
+       this.board = config.board;
+       this.channel =  config.channel;
+       this.bitdepth =  config.bitdepth;
+       this.samplerate =  config.samplerate;
+       this.emotion =  config.emotion;
+       this.state =  config.state;
+       this.name =  config.name;
 
        var node = this;
 
@@ -37,21 +42,27 @@ module.exports = function(RED) {
     	   
          // Board has been initialised
          if(!node.boardConfig.board){
-           node.boardConfig.board = new FurbyPiBoard();
+        	 node.boardConfig.board = new FurbyPiBoard();
+        	 node.status({fill:"green",shape:"ring",text:"connected"});
          }
 
          this.on('input', function(msg) {
-              node.boardConfig.board.SpeakOutput(msg, node.format, node.filename);
-              node.log("Speak out Loud: " + node.filename);
+        	 node.status({fill:"green",shape:"dot",text:"connected"});
+        	 
+             node.boardConfig.board.SpeakOutput(msg);
+             node.log("Speak out Loud: " + node.filename);
+             node.status({fill:"green",shape:"ring",text:"connected"});
           });
 
          this.on('close', function(done) {
+        	 node.status({fill:"red",shape:"ring",text:"disconnected"});
          });
 
          node.boardConfig.board.init();
 
        } else {
-         node.error("Node has no configuration!");
+    	   node.status({fill:"red",shape:"ring",text:"disconnected"});
+    	   node.error("Node has no configuration!");
        }
     }
     RED.nodes.registerType("furby-speak",FurbyPiSpeakOutputNode);

@@ -16,22 +16,47 @@
      - Olaf Hahn
 -->
 
+
 <!-- Furby Pi speak Output Node -->
 <script type="text/x-red" data-template-name="furby-speak">
     <div class="form-row" node-input-board">
         <label for="node-input-board"><i class="fa fa-cogs"></i> Board</label>
          <input type="text" id="node-input-board">
     </div>
-    <div class="form-row node-input-filename">
-         <label for="node-input-filename"><i class="fa fa-file"></i> Filename</label>
-         <input type="text" id="node-input-filename">
+    <div class="form-row node-input-channel">
+         <label for="node-input-channel"><i class="fa fa-file"></i> Channel</label>
+	     <select id="node-input-channel">
+            <option value="1">Mono</option>
+            <option value="2">Stereo</option>
+        </select>
     </div>
-    <div class="form-row node-input-format">
-        <label for="node-input-format"><i class="fa fa-tags"></i> Sound Format </label>
-        <select id="node-input-format">
-            <option value="wav">WAV</option>
-            <option value="ogg">OGG</option>
-            <option value="mp3">MP3</option>
+    <div class="form-row node-input-bitdepth">
+         <label for="node-input-bitdepth"><i class="fa fa-file"></i> Bit Depth</label>
+	     <select id="node-input-bitdepth">
+            <option value="8">8 Bit</option>
+            <option value="16">16 Bit</option>
+        </select>
+    </div>
+    <div class="form-row node-input-samplerate">
+         <label for="node-input-samplerate"><i class="fa fa-file"></i> Sample Rate (Hz)</label>
+	     <select id="node-input-samplerate">
+            <option value="22050">22050 Hz</option>
+            <option value="44100">44100 Hz</option>
+        </select>
+    </div>
+    <div class="form-row node-input-emotion">
+         <label for="node-input-emotion"><i class="fa fa-file"></i> Emotion</label>
+	     <select id="node-input-emotion">
+            <option value="sad">look sad</option>
+            <option value="happy">look happy</option>
+        </select>
+    </div>
+    <div class="form-row node-input-state">
+         <label for="node-input-state"><i class="fa fa-file"></i> State</label>
+	     <select id="node-input-state">
+            <option value="awake">awake</option>
+            <option value="sleep">sleep</option>
+            <option value="talking">talking</option>
         </select>
     </div>
     <div class="form-row">
@@ -41,7 +66,10 @@
 </script>
 
 <script type="text/x-red" data-help-name="furby-speak">
-    <p>Furby speakt output expects in <b>msg.payload</b> the file name with path to the outputfile. 
+    <p>Furby speakt output expects in <b>msg.furby.speech</b> the wav file object which has to be played. </p>
+    <p>In <b>msg.furby.channel</b>, <b>msg.furby.bitdepth</b>, <b>msg.furby.samplerate</b> the config could be overritten.</p> 
+    <p>You can also set the <b>msg.furby.emotion</b> to "sad" or "happy".  </p>
+    <p>And the <b>msg.furby.state</b> to "awake", "sleep" or "talking".  </p>
 </script>
 
 <script type="text/javascript">
@@ -50,15 +78,18 @@
         color: '#C7E9C0',
         defaults: {
             board: {type:"furby-config", required:true},
-            filename: {value:""},
-            format: {value:"wav", required: true},
+            channel: {value:"1", required:true},
+            bitdepth: {value:"16", required:true},
+            samplerate: {value:"22050", required:true},
+            emotion: {value:"happy", required:true},
+            state: {value:"awake", required: true},
             name: {value:""}
         },
         inputs:1,
         outputs:0,
         icon: "furby.png",
         label: function() {
-            return this.name || "furby speak output node";
+            return this.name || "furby speak node";
         }
     });
 </script>
