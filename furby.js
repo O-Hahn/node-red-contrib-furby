@@ -14,66 +14,306 @@
  * limitations under the License.
  * Authors:
  *    - Olaf Hahn
+ * Furby-Module is based on the serial node of node-red
  **/
+
+// writes out to furby a command
+// port = serial port
+// addCh = Char to be added or ""
+// cmd = string which should send out through serial port
+function writeCommand(node, cmd) {
+	var payload = cmd; 
+	
+	// log out the command
+	node.log("Furby gets: " + cmd);
+	
+	// set the payload to a buffer with the right content 
+    if (!Buffer.isBuffer(payload)) {
+        if (typeof payload === "object") {
+            payload = JSON.stringify(payload);
+        } else {
+            payload = payload.toString();
+        }
+        payload += addCh;
+    } else if (node.addCh !== "") {
+        payload = Buffer.concat([payload,new Buffer(node.addCh)]);
+    }
+    
+	// talk write out the buffer to the serial - furby
+    node.port.write(payload,function(err,res) {
+        if (err) {
+            var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
+            node.error(errmsg,msg);
+        }
+    });
+};
+
+// give the stream out on the audio 
+function speakOutput(node, outStream) {
+	// include needed libs
+	var Readable = require('stream').Readable;
+	var Speaker = require("speaker");
+	
+	// Create the Speaker instance
+	var speaker = new Speaker({
+	  channels: node.channel,          // 2 channels
+	  bitDepth: node.bitdepth,         // 16-bit samples
+	  sampleRate: node.samplerate     // 44,100 Hz sample rate
+	});
+
+	// make buffer streamable 
+	var rs = new Readable;
+	rs.push(outStream);
+	rs.push(null);
+ 	
+    // send file to output
+    rs.pipe(speaker);
+};
 
 module.exports = function(RED) {
     "use strict";
-    var FurbyPiBoard = require('./lib/FurbyBoard');
+    
+    // var FurbyPiBoard = require('./lib/FurbyBoard');
+    
+    var settings = RED.settings;
+    var events = require("events");
+    var serialp = require("serialport");
+    var bufMaxSize = 32768;  // Max serial buffer size, for inputs...
 
-    // Furby Speak Output
-    function FurbyPiSpeakOutputNode(config) {
-    	// Create this node
-        RED.nodes.createNode(this,config);
-        
-        // Retrieve the board-config node
-       this.boardConfig = RED.nodes.getNode(config.board);
+    // TODO: 'serialPool' should be encapsulated in SerialPortNode
 
-       this.board = config.board;
-       this.channel =  config.channel;
-       this.bitdepth =  config.bitdepth;
-       this.samplerate =  config.samplerate;
-       this.emotion =  config.emotion;
-       this.state =  config.state;
-       this.name =  config.name;
-
-       var node = this;
-
-       if(node.boardConfig){
-    	   
-         // Board has been initialised
-         if(!node.boardConfig.board){
-        	 node.boardConfig.board = new FurbyPiBoard();
-        	 node.status({fill:"green",shape:"ring",text:"connected"});
-         }
-
-         this.on('input', function(msg) {
-        	 node.status({fill:"green",shape:"dot",text:"connected"});
-        	 
-             node.boardConfig.board.SpeakOutput(msg);
-             node.log("Speak out Loud: " + node.filename);
-             node.status({fill:"green",shape:"ring",text:"connected"});
-          });
-
-         this.on('close', function(done) {
-        	 node.status({fill:"red",shape:"ring",text:"disconnected"});
-         });
-
-         node.boardConfig.board.init();
-
-       } else {
-    	   node.status({fill:"red",shape:"ring",text:"disconnected"});
-    	   node.error("Node has no configuration!");
-       }
-    }
-    RED.nodes.registerType("furby-speak",FurbyPiSpeakOutputNode);
 
     // FurbyPi Configuration Node 
     function FurbyPiConfigNode(n) {
-       // Create this node
-       RED.nodes.createNode(this,n);
-       
-       this.boardType = n.boardtype;
-       this.name = n.name;
-   }
-   RED.nodes.registerType("furby-config",FurbyPiConfigNode);
+        RED.nodes.createNode(this,n);
+        
+        this.serialport = n.serialport;
+        this.newline = n.newline;
+        this.addchar = n.addchar || "false";
+        this.serialbaud = parseInt(n.serialbaud) || 57600;
+        this.databits = parseInt(n.databits) || 8;
+        this.parity = n.parity || "none";
+        this.stopbits = parseInt(n.stopbits) || 1;
+        this.bin = n.bin || "false";
+        this.out = n.out || "char";
+    }
+    RED.nodes.registerType("furby-config",FurbyPiConfigNode);
+
+
+    // Furby Speak Output
+    function FurbyPiOutputNode(config) {
+    	// Create this node
+        RED.nodes.createNode(this,config);
+        
+        this.furby = config.furby;
+        this.furbyConfig = RED.nodes.getNode(this.furby);
+        
+		this.channel =  config.channel;
+		this.bitdepth =  config.bitdepth;
+		this.samplerate =  config.samplerate;
+		
+		this.emotion =  config.emotion;
+		this.state =  config.state;
+		this.arm = config.arm;
+		this.light = "255000255";
+		this.name =  config.name;
+
+		var node = this;
+		
+		// Configuration for Furby is given
+        if (this.furbyConfig) {
+        	// setup a serialPort communication
+            node.port = serialPool.get(this.furbyConfig.serialport,
+                this.furbyConfig.serialbaud,
+                this.furbyConfig.databits,
+                this.furbyConfig.parity,
+                this.furbyConfig.stopbits,
+                this.furbyConfig.newline);
+            node.addCh = "";
+            if (node.furbyConfig.addchar == "true" || node.furbyConfig.addchar === true) {
+                node.addCh = this.furbyConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0"); // jshint ignore:line
+            }
+
+            // if there is an new input
+            node.on("input",function(msg) {
+            	var fstate, femotion, farm, flight;
+            	
+            	// set the right furby handling
+            	fstate = msg.furby.state || node.state; 
+            	femotion = msg.furby.emotion || node.emotion; 
+            	farm = msg.furby.arm || node.arm;
+            	flight = msg.furby.light || node.light || "255000000";
+            	
+            	// set the right emotion - default = happy             	
+        		if (femotion == "awake") {
+        			writeCommand(node, "ES");
+        		} else {
+        			writeCommand(node, "EH");
+        		}
+            	
+            	// set the right state default = sleep
+        		if (fstate == "awake") {
+        			writeCommand(node, "SA");
+        		} else if (fstate == "talk") {  
+        			writeCommand(node, "ST");
+        		} else {
+        			writeCommand(node, "SS");
+        		}
+            
+            	// set the right arm position / motion - default Postion Down
+            	if (farm == "waveup") {
+        			writeCommand(node, "AWU");
+            	} else if (farm == "wavedown") {
+        			writeCommand(node, "AWD");
+            	} else if (farm == "wavesinus") {
+        			writeCommand(node, "AWS");
+            	} else if (farm == "waveasync") {
+        			writeCommand(node, "AWA");
+            	} else if (farm == "chaotic") {
+        			writeCommand(node, "AWC");
+            	} else if (farm == "positionup") {
+        			writeCommand(node, "APD");
+            	} else if (farm == "positionhorizontal") {
+        			writeCommand(node, "APH");
+            	} else {
+        			writeCommand(node, "APD");
+            	}
+            	
+            	// set the light to the right RGB
+    			writeCommand(node, "T"+flight);
+
+    			// if furby talks - send speach stream
+    			if (fstate == "talk") {
+    				speakOutput(node, msg.furby.speach);
+    			}
+            });
+            
+            // Serial Port is ready
+            node.port.on('ready', function() {
+                node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+            });
+            
+            // Serial Port is closed
+            node.port.on('closed', function() {
+                node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
+            });
+            
+        } else {
+            this.error(RED._("serial.errors.missing-conf"));
+        }
+
+        // Furby has a close 
+        this.on("close", function(done) {
+            if (this.furbyConfig) {
+                serialPool.close(this.furbyConfig.serialport,done);
+            } else {
+                done();
+            }
+        });
+    }
+	RED.nodes.registerType("furby-output",FurbyPiOutputNode);
+
+
+
+
+    var serialPool = (function() {
+        var connections = {};
+        return {
+            get:function(port,baud,databits,parity,stopbits,newline,callback) {
+                var id = port;
+                if (!connections[id]) {
+                    connections[id] = (function() {
+                        var obj = {
+                            _emitter: new events.EventEmitter(),
+                            serial: null,
+                            _closing: false,
+                            tout: null,
+                            on: function(a,b) { this._emitter.on(a,b); },
+                            close: function(cb) { this.serial.close(cb); },
+                            write: function(m,cb) { this.serial.write(m,cb); },
+                        }
+                        //newline = newline.replace("\\n","\n").replace("\\r","\r");
+                        var olderr = "";
+                        var setupSerial = function() {
+                            obj.serial = new serialp.SerialPort(port,{
+                                baudrate: baud,
+                                databits: databits,
+                                parity: parity,
+                                stopbits: stopbits,
+                                parser: serialp.parsers.raw
+                            },true, function(err, results) {
+                                if (err) {
+                                    if (err.toString() !== olderr) {
+                                        olderr = err.toString();
+                                        RED.log.error(RED._("serial.errors.error",{port:port,error:olderr}));
+                                    }
+                                    obj.tout = setTimeout(function() {
+                                        setupSerial();
+                                    }, settings.serialReconnectTime);
+                                }
+                            });
+                            obj.serial.on('error', function(err) {
+                                RED.log.error(RED._("serial.errors.error",{port:port,error:err.toString()}));
+                                obj._emitter.emit('closed');
+                                obj.tout = setTimeout(function() {
+                                    setupSerial();
+                                }, settings.serialReconnectTime);
+                            });
+                            obj.serial.on('close', function() {
+                                if (!obj._closing) {
+                                    RED.log.error(RED._("serial.errors.unexpected-close",{port:port}));
+                                    obj._emitter.emit('closed');
+                                    obj.tout = setTimeout(function() {
+                                        setupSerial();
+                                    }, settings.serialReconnectTime);
+                                }
+                            });
+                            obj.serial.on('open',function() {
+                                olderr = "";
+                                RED.log.info(RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
+                                if (obj.tout) { clearTimeout(obj.tout); }
+                                //obj.serial.flush();
+                                obj._emitter.emit('ready');
+                            });
+                            obj.serial.on('data',function(d) {
+                                for (var z=0; z<d.length; z++) {
+                                    obj._emitter.emit('data',d[z]);
+                                }
+                            });
+                            obj.serial.on("disconnect",function() {
+                                RED.log.error(RED._("serial.errors.disconnected",{port:port}));
+                            });
+                        }
+                        setupSerial();
+                        return obj;
+                    }());
+                }
+                return connections[id];
+            },
+            close: function(port,done) {
+                if (connections[port]) {
+                    if (connections[port].tout != null) {
+                        clearTimeout(connections[port].tout);
+                    }
+                    connections[port]._closing = true;
+                    try {
+                        connections[port].close(function() {
+                            RED.log.info(RED._("serial.errors.closed",{port:port}));
+                            done();
+                        });
+                    }
+                    catch(err) { }
+                    delete connections[port];
+                } else {
+                    done();
+                }
+            }
+        }
+    }());
+
+    RED.httpAdmin.get("/serialports", RED.auth.needsPermission('serial.read'), function(req,res) {
+        serialp.list(function (err, ports) {
+            res.json(ports);
+        });
+    });
 }
