@@ -39,8 +39,8 @@
             "lengths": "into fixed lengths of"
         },
         "emotion": {
-            "sleep": "Sleep",
-            "talk": "Talk"
+            "sad": "Sad",
+            "happy": "Happy"
         },
         "state": {
             "awake": "Awake",

@@ -31,7 +31,7 @@
         </select>
     </div>
     <div class="form-row node-input-bitdepth">
-         <label for="node-input-bitdepth"><i class="fa fa-file"></i> <span data-i18n="furby.label.bitdepth"></span>h</label>
+         <label for="node-input-bitdepth"><i class="fa fa-file"></i> <span data-i18n="furby.label.bitdepth"></span></label>
 	     <select id="node-input-bitdepth">
             <option value="8">8 Bit</option>
             <option value="16">16 Bit</option>
@@ -64,8 +64,8 @@
 	     <select id="node-input-arms">
             <option value="waveup" data-i18n="furby.motion.waveup"></option>
             <option value="wavedown" data-i18n="furby.motion.wavedown"></option>
-            <option value="sinussync" data-i18n="furby.motion.sinussync"></option>
-            <option value="sinusasync" data-i18n="furby.motion.sinusasync"></option>
+            <option value="wavesinus" data-i18n="furby.motion.wavesinus"></option>
+            <option value="waveasync" data-i18n="furby.motion.waveasync"></option>
             <option value="chaotic" data-i18n="furby.motion.chaotic"></option>
             <option value="positionup" data-i18n="furby.motion.positionup"></option>
             <option value="positiondown" data-i18n="furby.motion.positiondown"></option>
@@ -79,10 +79,12 @@
 </script>
 
 <script type="text/x-red" data-help-name="furby-output">
-    <p>Furby speakt output expects in <b>msg.furby.speech</b> the wav file object which has to be played. </p>
-    <p>In <b>msg.furby.channel</b>, <b>msg.furby.bitdepth</b>, <b>msg.furby.samplerate</b> the config could be overritten.</p> 
+    <p>Furby output node communicates with the furby micro controller placed on the serial interface of the raspi. </p>
     <p>You can also set the <b>msg.furby.emotion</b> to "sad" or "happy".  </p>
-    <p>And the <b>msg.furby.state</b> to "awake", "sleep" or "talking".  </p>
+    <p>And the <b>msg.furby.state</b> to "awake", "sleep" or "talk". </p>
+	<p>The furby cloud also speak (when the state is "talk") the given output in <b>msg.furby.speech</b> as a wav file object which is played on the default alsa interface (HDMI,chinch). </p>
+    <p>In <b>msg.furby.channel</b>, <b>msg.furby.bitdepth</b>, <b>msg.furby.samplerate</b> the config could be overritten.</p> 
+    <p>With <b>msg.furby.arm</b> the movement of the arms could be set to "waveup", "wavedown", "wavesinus", "waveasync", "chaotic", "positionup", "positiondown" or "talking".  </p>
 </script>
 
 <script type="text/javascript">
@@ -107,7 +109,43 @@
         }
     });
 </script>
-<!-- End of Furby Pi speak Output Node -->
+<!-- End of Furby Pi Output Node -->
+
+<!-- Furby Pi Input Node -->
+<script type="text/x-red" data-template-name="furby-input">
+    <div class="form-row" node-input-furby">
+        <label for="node-input-furby"><i class="fa fa-cogs"></i> <span data-i18n="furby.label.furby"></span></label>
+         <input type="text" id="node-input-furby">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="furby.label.name"></span></label>
+        <input type="text" id="node-input-name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="furby-input">
+    <p>With the Furby input node you can get sensor informations / states form back. </p>
+	<p>Which kind of sensor gives a value is placed in <b>msg.furby.sensor</b> and could be "thonge", "back" or "light". </p>
+	<p>In the <b>msg.furby.value</b> there is the value "pressed" or "released" or light-value (0=dark and 254=maxlight) </p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('furby-input',{
+        category: 'Furby-Pi',
+        color: '#C7E9C0',
+        defaults: {
+            furby: {type:"furby-config", required:true},
+            name: {value:""}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "furby.png",
+        label: function() {
+            return this.name || "furby input node";
+        }
+    });
+</script>
+<!-- End of Furby Pi Input Node -->
 
 
 <!-- Furby Pi Board-Config Node -->
