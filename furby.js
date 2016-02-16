@@ -34,7 +34,7 @@ function writeCommand(node, cmd) {
         } else {
             payload = payload.toString();
         }
-        payload += addCh;
+        payload += node.addCh;
     } else if (node.addCh !== "") {
         payload = Buffer.concat([payload,new Buffer(node.addCh)]);
     }
@@ -182,9 +182,12 @@ module.exports = function(RED) {
             	// set the light to the right RGB
     			writeCommand(node, "T"+flight);
 
-    			// if furby talks - send speach stream
+    			// if furby talks - send speech stream
     			if (fstate == "talk") {
-    				speakOutput(node, msg.furby.speach);
+    				// check if speech is filled or standard-sound given
+    				if (msg.furby.speech) {
+        				speakOutput(node, msg.furby.speech);    					
+    				}
     			}
             });
             
