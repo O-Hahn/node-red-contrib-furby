@@ -180,7 +180,7 @@ module.exports = function(RED) {
             	}
             	
             	// set the light to the right RGB
-    			writeCommand(node, "T"+flight);
+    			writeCommand(node, "L"+flight);
 
     			// if furby talks - send speech stream
     			if (fstate == "talk") {
