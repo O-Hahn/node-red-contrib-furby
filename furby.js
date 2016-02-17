@@ -105,9 +105,11 @@ module.exports = function(RED) {
     	// Create this node
         RED.nodes.createNode(this,config);
         
+        // Get Furby config 
         this.furby = config.furby;
         this.furbyConfig = RED.nodes.getNode(this.furby);
         
+        // set parameters and save locally 
 		this.channel =  config.channel;
 		this.bitdepth =  config.bitdepth;
 		this.samplerate =  config.samplerate;

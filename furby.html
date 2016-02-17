@@ -72,6 +72,12 @@
             <option value="positionhorizontal" data-i18n="furby.motion.positionhorizontal"></option>
         </select>
     </div>
+    <div class="form-row" node-input-rgblight>
+    	<label for="node-config-input-rgblight" style="width: auto"><i class="fa fa-lightbulb-o"></i> <span data-i18n="furby.label.lightrgb"></span></label>
+        <input type="text" id="node-config-input-lightr" style="width: 50px">
+        <input type="text" id="node-config-input-lightg" style="width: 50px">
+        <input type="text" id="node-config-input-lightb" style="width: 50px">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="furby.label.name"></span></label>
         <input type="text" id="node-input-name">
@@ -99,6 +105,9 @@
             emotion: {value:"happy", required:true},
             state: {value:"sleep", required: true},
             arms: {value:"positionsdown", required: true},
+            lightr: {value:0,required:true,validate:RED.validators.number() },
+            lightg: {value:0,required:true,validate:RED.validators.number() },
+            lightb: {value:0,required:true,validate:RED.validators.number() },
             name: {value:""}
         },
         inputs:1,

@@ -20,7 +20,8 @@
             "state": "State",
             "name": "Name",
             "arms": "Arms Motion",
-            "speak": "Speak Out", 
+            "speak": "Speak Out",
+            "lightrgb": "RGB Light", 
             "none": "none"
         },
         "placeholder": {

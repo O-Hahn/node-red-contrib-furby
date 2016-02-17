@@ -1,6 +1,14 @@
+remote system: 
+ssh root@159.8.237.42
+pwd: QMv33u6A
+
+weiter mit 
+ssh -6 pi@furby.dynv6.net
+pwd: furby
 
 ssh pi@grovepi
 cd .node-red
+
 
 # Additional install needed
 sudo apt-get install libasound2-dev
