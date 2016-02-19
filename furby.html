@@ -101,10 +101,10 @@
             furby: {type:"furby-config", required:true},
             channel: {value:"1", required:true},
             bitdepth: {value:"16", required:true},
-            samplerate: {value:"115200", required:true},
+            samplerate: {value:"22050", required:true},
             emotion: {value:"happy", required:true},
             state: {value:"sleep", required: true},
-            arms: {value:"positionsdown", required: true},
+            arms: {value:"positiondown", required: true},
             lightr: {value:0,required:true,validate:RED.validators.number() },
             lightg: {value:0,required:true,validate:RED.validators.number() },
             lightb: {value:0,required:true,validate:RED.validators.number() },
@@ -135,7 +135,7 @@
 <script type="text/x-red" data-help-name="furby-input">
     <p>With the Furby input node you can get sensor informations / states form back. </p>
 	<p>Which kind of sensor gives a value is placed in <b>msg.furby.sensor</b> and could be "thonge", "back" or "light". </p>
-	<p>In the <b>msg.furby.value</b> there is the value "pressed" or "released" or light-value (0=dark and 254=maxlight) </p>
+	<p>In the <b>msg.furby.value</b> there is the value "pressed" or "released" or if light (0=dark and 254=maxlight) </p>
 </script>
 
 <script type="text/javascript">

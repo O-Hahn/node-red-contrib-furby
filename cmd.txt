@@ -15,9 +15,14 @@ sudo apt-get install libasound2-dev
 
 npm install speaker
 npm install stream-buffers 
+
+# on local linux
+source ~/.profile
+
+# install package from git
 npm install https://github.com/O-Hahn/node-red-contrib-furby.git
 
-# Node-Red Start 
+# Node-Red Start on pi
 node-red-pi --max-old-space-size=128 -v
 
 node-red-stop 

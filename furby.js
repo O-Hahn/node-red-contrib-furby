@@ -117,7 +117,10 @@ module.exports = function(RED) {
 		this.emotion =  config.emotion;
 		this.state =  config.state;
 		this.arm = config.arm;
-		this.light = "255000255";
+		this.lightr = config.lightr;
+		this.lightg = config.lightg; 
+		this.lightb = config.lightb;
+		this.light = config.lightr.toString() + config.lightg.toString() + config.lightb.toString();
 		this.name =  config.name;
 
 		var node = this;
@@ -144,7 +147,7 @@ module.exports = function(RED) {
             	fstate = msg.furby.state || node.state; 
             	femotion = msg.furby.emotion || node.emotion; 
             	farm = msg.furby.arm || node.arm;
-            	flight = msg.furby.light || node.light || "255000000";
+            	flight = msg.furby.light || node.light || "000254000";
             	
             	// set the right emotion - default = happy             	
         		if (femotion == "awake") {
@@ -250,10 +253,20 @@ module.exports = function(RED) {
             }
 
             this.port.on('data', function(msg) {
+            	// fuby message answer
+            	furby = {
+            			sensor: "none",
+            			value: ""
+            	};
+            	
                 // single char buffer
-                if ((node.furbyConfig.newline === 0)||(node.furbyConfig.newline === "")) {
-                    if (node.furbyConfig.bin !== "bin") { node.send({"payload": String.fromCharCode(msg)}); }
-                    else { node.send({"payload": new Buffer([msg])}); }
+                if ((node.furbyConfig.newline === 0) || (node.furbyConfig.newline === "")) {
+                    if (node.furbyConfig.bin !== "bin") { 
+                    	node.send({"payload": String.fromCharCode(msg)}); 
+                    	}
+                    else { 
+                    	node.send({"payload": new Buffer([msg])}); 
+                    	}
                 }
                 else {
                     // do the timer thing
@@ -303,9 +316,11 @@ module.exports = function(RED) {
                     }
                 }
             });
+            
             this.port.on('ready', function() {
                 node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
             });
+            
             this.port.on('closed', function() {
                 node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
             });
