@@ -74,12 +74,7 @@
     </div>
     <div class="form-row" node-input-rgblight>
     	<label for="node-config-input-rgblight" style="width: auto"><i class="fa fa-lightbulb-o"></i> <span data-i18n="furby.label.lightrgb"></span></label>
-    	<label for="node-config-input-lightr" style="width: auto"> <span data-i18n="furby.label.red"></span></label>
-        <input type="text" id="node-config-input-lightr" style="width: 50px">
-    	<label for="node-config-input-lightg" style="width: auto"> <span data-i18n="furby.label.green"></span></label>
-        <input type="text" id="node-config-input-lightg" style="width: 50px">
-    	<label for="node-config-input-lightb" style="width: auto"> <span data-i18n="furby.label.blue"></span></label>
-        <input type="text" id="node-config-input-lightb" style="width: 50px">
+        <input type="text" id="node-config-input-rgblight" style="width: 120px">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="furby.label.name"></span></label>
@@ -109,9 +104,7 @@
             emotion: {value:"happy", required:true},
             state: {value:"sleep", required: true},
             arms: {value:"positiondown", required: true},
-            lightr: {value:0,required:true,validate:RED.validators.number() },
-            lightg: {value:0,required:true,validate:RED.validators.number() },
-            lightb: {value:0,required:true,validate:RED.validators.number() },
+            lightrgb: {value:"000000000", required:true},
             name: {value:""}
         },
         inputs:1,
