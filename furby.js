@@ -225,7 +225,7 @@ module.exports = function(RED) {
     // Furby Speak Input
 	function FurbyPiInputNode(n) {
         RED.nodes.createNode(this,n);
-        
+               
         this.furby = n.furby;
         this.furbyConfig = RED.nodes.getNode(this.furby);
 
@@ -233,10 +233,13 @@ module.exports = function(RED) {
             var node = this;
             node.tout = null;
             var buf;
+            
             if (node.furbyConfig.out != "count") { buf = new Buffer(bufMaxSize); }
             else { buf = new Buffer(Number(node.furbyConfig.newline)); }
             var i = 0;
+            
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
+            
             node.port = serialPool.get(this.serialConfig.serialport,
                 this.serialConfig.serialbaud,
                 this.serialConfig.databits,
@@ -253,15 +256,7 @@ module.exports = function(RED) {
             }
 
             this.port.on('data', function(msg) {
-            	// new return msg 
-            	var newmsg = {
-            			payload : "",
-            			furby : {
-            				sensor : "none",
-            				value : ""
-            			}
-            	}
-            	            	
+             	            	
                 // single char buffer --> payload direct
                 if ((node.furbyConfig.newline === 0) || (node.furbyConfig.newline === "")) {
                     if (node.furbyConfig.bin !== "bin") { 
@@ -291,6 +286,7 @@ module.exports = function(RED) {
                             buf[0] = msg;
                         }
                     }
+                    
                     // count bytes into a buffer...
                     else if (node.furbyConfig.out === "count") {
                         buf[i] = msg;
@@ -304,15 +300,48 @@ module.exports = function(RED) {
                             i = 0;
                         }
                     }
-                    // look to match char...
+                    
+                    // look to match char... Real Furby communication
                     else if (node.furbyConfig.out === "char") {
                         buf[i] = msg;
                         i += 1;
                         if ((msg === splitc[0]) || (i === bufMaxSize)) {
-                            var n = new Buffer(i);
-                            buf.copy(n,0,0,i);
+                        	// new furby object 
+                        	var furby = {
+                        			sensor : "none",
+                        			value : ""
+                                	}
+                            // new buffer with answer object
+                        	var n = new Buffer(i);
+
+                                             	
+                            // binary or ascii buffer 
+                        	buf.copy(n,0,0,i);
                             if (node.furbyConfig.bin !== "bin") { n = n.toString(); }
-                            node.send({"payload":n});
+                            
+                            // write into log the message
+                            node.log("Furby in:" , n);
+                            
+                            // Thonge pressed / released
+                            if (n == "TP" || n == "TR") {
+                            	furby.sensor = "thonge";
+                            	if (n == "TP") { furby.value = "pressed";} 
+                            	else { furby.value = "released"; }
+                            }
+                            
+                            // Back pressed / released
+                            if (n == "BP" || n == "BR") {
+                            	furby.sensor = "back";
+                            	if (n == "BP") { furby.value = "pressed";} 
+                            	else { furby.value = "released"; }
+                            }
+                            
+                            if (n.substring(1,1) == "L")  {
+                            	furby.sensor = "light";
+                            	furby.value = n.substring(2);
+                            }
+                            
+                            node.send({"payload":n, "furby":furby});
                             n = null;
                             i = 0;
                         }

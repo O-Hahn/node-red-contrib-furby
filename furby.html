@@ -76,11 +76,11 @@
         <label for="node-input-rgblight"><i class="fa fa-lightbulb-o"></i> <span data-i18n="furby.label.rgblight"></span></label>
    
 		<label for="node-input-lightr"></i> <span data-i18n="furby.label.red"></span></label>
-        <input type="text" id="node-input-lightr" style="width:45px">
+        <input type="text" id="node-input-lightr">
         <label for="node-input-lightg"> <span data-i18n="furby.label.green"></span></label>
-        <input type="text" id="node-input-lightg" style="width:45px">
+        <input type="text" id="node-input-lightg">
         <label for="node-input-lightb"> <span data-i18n="furby.label.blue"></span></label>
-        <input type="text" id="node-input-lightb" style="width:45px">
+        <input type="text" id="node-input-lightb">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="furby.label.name"></span></label>
@@ -139,6 +139,7 @@
 
 <script type="text/x-red" data-help-name="furby-input">
     <p>With the Furby input node you can get sensor informations / states form back. </p>
+    <p>Only in the char with delimiter config - the furby property is set - all other are in payload </p>
 	<p>Which kind of sensor gives a value is placed in <b>msg.furby.sensor</b> and could be "thonge", "back" or "light". </p>
 	<p>In the <b>msg.furby.value</b> there is the value "pressed" or "released" or if light (0=dark and 254=maxlight) </p>
 </script>
