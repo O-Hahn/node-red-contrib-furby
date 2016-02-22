@@ -21,7 +21,7 @@
             "name": "Name",
             "arms": "Arms Motion",
             "speak": "Speak Out",
-            "lightrgb": "RGB Light", 
+            "rgblight": "RGB Light", 
             "red": "Red",
             "green":"Green",
             "blue": "Blue",
