@@ -117,7 +117,7 @@ module.exports = function(RED) {
 		this.emotion =  config.emotion;
 		this.state =  config.state;
 		this.arm = config.arm;
-		this.lightrgb = config.lightrgb;
+		this.rgblight = config.rgblight;
 		this.name =  config.name;
 
 		var node = this;
@@ -144,7 +144,7 @@ module.exports = function(RED) {
             	fstate = msg.furby.state || node.state; 
             	femotion = msg.furby.emotion || node.emotion; 
             	farm = msg.furby.arm || node.arm;
-            	flight = msg.furby.lightrgb || node.lightrgb || "000254000";
+            	flight = msg.furby.rgblight || node.rgblight || "000254000";
             	
             	// set the right emotion - default = happy             	
         		if (femotion == "awake") {
