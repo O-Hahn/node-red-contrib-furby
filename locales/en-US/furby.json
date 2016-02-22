@@ -22,6 +22,9 @@
             "arms": "Arms Motion",
             "speak": "Speak Out",
             "lightrgb": "RGB Light", 
+            "red": "Red",
+            "green":"Green",
+            "blue": "Blue",
             "none": "none"
         },
         "placeholder": {

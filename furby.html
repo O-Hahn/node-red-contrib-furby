@@ -74,8 +74,11 @@
     </div>
     <div class="form-row" node-input-rgblight>
     	<label for="node-config-input-rgblight" style="width: auto"><i class="fa fa-lightbulb-o"></i> <span data-i18n="furby.label.lightrgb"></span></label>
+    	<label for="node-config-input-lightr" style="width: auto"> <span data-i18n="furby.label.red"></span></label>
         <input type="text" id="node-config-input-lightr" style="width: 50px">
+    	<label for="node-config-input-lightg" style="width: auto"> <span data-i18n="furby.label.green"></span></label>
         <input type="text" id="node-config-input-lightg" style="width: 50px">
+    	<label for="node-config-input-lightb" style="width: auto"> <span data-i18n="furby.label.blue"></span></label>
         <input type="text" id="node-config-input-lightb" style="width: 50px">
     </div>
     <div class="form-row">
@@ -91,6 +94,7 @@
 	<p>The furby cloud also speak (when the state is "talk") the given output in <b>msg.furby.speech</b> as a wav file object which is played on the default alsa interface (HDMI,chinch). </p>
     <p>In <b>msg.furby.channel</b>, <b>msg.furby.bitdepth</b>, <b>msg.furby.samplerate</b> the config could be overritten.</p> 
     <p>With <b>msg.furby.arm</b> the movement of the arms could be set to "waveup", "wavedown", "wavesinus", "waveasync", "chaotic", "positionup", "positiondown" or "talking".  </p>
+    <p>With <b>msg.furby.lightrgb</b> the rgb-light could be set (string with r/g/b 0-255 like 255000255.  </p>
 </script>
 
 <script type="text/javascript">

@@ -253,13 +253,16 @@ module.exports = function(RED) {
             }
 
             this.port.on('data', function(msg) {
-            	// fuby message answer
-            	furby = {
-            			sensor: "none",
-            			value: ""
-            	};
-            	
-                // single char buffer
+            	// new return msg 
+            	var newmsg = {
+            			payload : "",
+            			furby : {
+            				sensor : "none",
+            				value : ""
+            			}
+            	}
+            	            	
+                // single char buffer --> payload direct
                 if ((node.furbyConfig.newline === 0) || (node.furbyConfig.newline === "")) {
                     if (node.furbyConfig.bin !== "bin") { 
                     	node.send({"payload": String.fromCharCode(msg)}); 
