@@ -248,6 +248,8 @@ module.exports = function(RED) {
                 this.serialConfig.newline
             );
 
+            node.log("Furby-In:" + this.serialConfig.serialport +" " + this.serialConfig.serialbaud);
+            
             var splitc;
             if (node.furbyConfig.newline.substr(0,2) == "0x") {
                 splitc = new Buffer([parseInt(node.furbyConfig.newline)]);
