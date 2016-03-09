@@ -308,7 +308,7 @@ module.exports = function(RED) {
                 this.furbyConfig.newline
             );
             
-            var splitc, splitclen, splitcbuf;
+            var splitc;
             
             if (node.furbyConfig.newline.substr(0,2) == "0x") {
                 splitc = new Buffer([parseInt(node.furbyConfig.newline)]);
@@ -380,7 +380,7 @@ module.exports = function(RED) {
                             node.log("Furby in:" + n);
                             
                             // cut split-char
-                            if (splitc.length > 0) { n = n.slice(0,n.length-splitc.length); }
+                            if (splitc.length > 0) { n = n.slice(0,n.length-splitc.length+1); }
                             
                             // Thonge pressed / released
                             if (n == "TP" || n == "TR") {
