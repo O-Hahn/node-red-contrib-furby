@@ -51,23 +51,76 @@ function writeCommand(node, cmd) {
 // give the stream out on the audio 
 function speakOutput(node, outStream) {
 	// include needed libs
-	var Readable = require('stream').Readable;
-	var Speaker = require("speaker");
+	var ver1 = false; 
 	
-	// Create the Speaker instance
-	var speaker = new Speaker({
-	  channels: node.channel,          // 2 channels
-	  bitDepth: node.bitdepth,         // 16-bit samples
-	  sampleRate: node.samplerate     // 44,100 Hz sample rate
-	});
+	if (ver1 === true) {
+		var Readable = require('stream').Readable;
+		var Speaker = require("speaker");
 
-	// make buffer streamable 
-	var rs = new Readable;
-	rs.push(outStream);
-	rs.push(null);
- 	
-    // send file to output
-    rs.pipe(speaker);
+		// Create the Speaker instance
+		var speaker = new Speaker({
+		  channels: node.channel,          // 2 channels
+		  bitDepth: node.bitdepth,         // 16-bit samples
+		  sampleRate: node.samplerate     // 44,100 Hz sample rate
+		});
+
+		// make buffer streamable 
+		var rs = new Readable;
+		rs.push(outStream);
+		rs.push(null);
+	 	
+	    // send file to output
+	    rs.pipe(speaker);
+	} else {
+		var Sound = require('node-aplay');
+	 	var fs = require("fs-extra");
+	 	var os = require("os");
+	 	var cdat = new new Date().toISOString().replace('T', '-').substr(0, 19);
+	 	var filename = "/furbyspeak/speak-" + cdat +".wav";
+	 	
+	 	
+ 		var data = outStream;
+	 		
+ 		if ((typeof data === "object") && (!Buffer.isBuffer(data))) {
+	 			 data = JSON.stringify(data);
+ 		}
+        if (typeof data === "boolean") { data = data.toString(); }
+        if (typeof data === "number") { data = data.toString(); }
+        if (!Buffer.isBuffer(data)) { data += os.EOL; }
+	         
+        data = new Buffer(data);
+	          
+         // using "binary" not {encoding:"binary"} to be 0.8 compatible for a while
+         fs.writeFile(filename, data, "binary", function (err) {
+             if (err) {
+                 if (err.code === "ENOENT") {
+                     fs.ensureFile(filename, function (err) {
+                         if (err) { 
+                         	console.error("Furby Speak (err): File "+ filename + " could not be created");
+                         }
+                         else {
+                             fs.writeFile(filename, data, "binary", function (err) {
+                                 if (err) { 
+                                 	console.error("Furby Speak (err): File " + filename + " could not be written to");
+                                 	}
+                             });
+                         }
+                     });
+                 }
+                 else { 
+                 	console.error("Furby Speak (err): error writing " + err);
+                 }
+             }
+             else { 
+             	console.log("Furby Speak (log): File " + filename + " written.");
+             	}
+         });
+
+		// fire and forget: 
+		new Sound(filename).play();
+
+	}
+	
 };
 
 module.exports = function(RED) {
@@ -341,9 +394,9 @@ module.exports = function(RED) {
                             	else { furby.value = "released"; }
                             }
                             
-                            if (n.substring(1,1) == "L")  {
+                            if (n.substring(0,1) == "L")  {
                             	furby.sensor = "light";
-                            	furby.value = n.substring(2);
+                            	furby.value = parseInt(n.substring(1));
                             }
                             
                             node.send({"payload":n, "furby":furby});
