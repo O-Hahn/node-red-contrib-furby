@@ -287,11 +287,6 @@ module.exports = function(RED) {
             node.tout = null;
             var buf;
 
-            // new furby object 
-        	var furby = {
-        			sensor : "none",
-        			value : ""
-                	}
             
             if (node.furbyConfig.out != "count") { buf = new Buffer(bufMaxSize); }
             else { buf = new Buffer(Number(node.furbyConfig.newline)); }
@@ -367,29 +362,37 @@ module.exports = function(RED) {
                         buf[i] = msg;
                         i += 1;
                                                 
-                        if ((msg === splitc[0]) || (i === bufMaxSize)) {
+                        if ((msg === splitc[splitc.length-1]) || (i === bufMaxSize)) {
                             // new buffer with answer object
                         	var n = new Buffer(i);
+
+                        	// new furby object 
+                        	var furby = {
+                        			sensor : "none",
+                        			value : ""
+                                	}
                                              	
                             // binary or ascii buffer & cut splitchar 
                         	buf.copy(n,0,0,i);
                         	
                             if (node.furbyConfig.bin !== "bin") { n = n.toString(); }
                             
+                            if (splitc.length > 0) { n = n.substring(0,n.length-splitc.length); }
+                            
                             // write into log the message
                             node.log("Furby in:" + n);
                        
                             // Thonge pressed / released
-                            if (n.substring(0,2) == "TP" || n.substring(0,2) == "TR") {
+                            if (n == "TP" || n == "TR") {
                             	furby.sensor = "thonge";
-                            	if (n.substring(0,2) == "TP") { furby.value = "pressed";} 
+                            	if (n == "TP") { furby.value = "pressed";} 
                             	else { furby.value = "released"; }
                             }
                             
                             // Back pressed / released
-                            if (n.substring(0,2) == "BP" || n.substring(0,2) == "BR") {
+                            if (n. == "BP" || n. == "BR") {
                             	furby.sensor = "back";
-                            	if (n.substring(0,2) == "BP") { furby.value = "pressed";} 
+                            	if (n == "BP") { furby.value = "pressed";} 
                             	else { furby.value = "released"; }
                             }
                             
