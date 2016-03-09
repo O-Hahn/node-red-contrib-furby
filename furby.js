@@ -372,13 +372,15 @@ module.exports = function(RED) {
                         	var n = new Buffer(i);
                                              	
                             // binary or ascii buffer & cut splitchar 
-                        	if (splitc.length > 0) {buf.copy(n,0,0,i-splitc.length); } 
-                        	else { buf.copy(n,0,0,i); }
+                        	buf.copy(n,0,0,i); 
                         	
                             if (node.furbyConfig.bin !== "bin") { n = n.toString(); }
                             
                             // write into log the message
-                            node.log("Furby in:" , n);
+                            node.log("Furby in:" + n);
+                            
+                            // cut split-char
+                            if (splitc.length > 0) { n = n.slice(0,n.length-splitc.length); }
                             
                             // Thonge pressed / released
                             if (n == "TP" || n == "TR") {
