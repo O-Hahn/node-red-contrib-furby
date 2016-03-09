@@ -254,7 +254,7 @@ module.exports = function(RED) {
                 this.furbyConfig.newline
             );
             
-            var splitc, splitclen;
+            var splitc, splitclen, splitcbuf;
             
             if (node.furbyConfig.newline.substr(0,2) == "0x") {
                 splitc = new Buffer([parseInt(node.furbyConfig.newline)]);
