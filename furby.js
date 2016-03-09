@@ -43,7 +43,7 @@ function writeCommand(node, cmd) {
     node.port.write(payload,function(err,res) {
         if (err) {
             var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
-            node.error(errmsg,msg);
+            node.error(errmsg);
         }
     });
 };
@@ -150,7 +150,7 @@ module.exports = function(RED) {
             	flight = msg.furby.rgblight || node.rgblight || "000254000";
             	
             	// set the right emotion - default = happy             	
-        		if (femotion == "awake") {
+        		if (femotion == "sad") {
         			writeCommand(node, "ES");
         		} else {
         			writeCommand(node, "EH");
@@ -240,15 +240,15 @@ module.exports = function(RED) {
             
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
             
-            node.port = serialPool.get(this.serialConfig.serialport,
-                this.serialConfig.serialbaud,
-                this.serialConfig.databits,
-                this.serialConfig.parity,
-                this.serialConfig.stopbits,
-                this.serialConfig.newline
+            node.port = serialPool.get(this.furbyConfig.serialport,
+                this.furbyConfig.serialbaud,
+                this.furbyConfig.databits,
+                this.furbyConfig.parity,
+                this.furbyConfig.stopbits,
+                this.furbyConfig.newline
             );
 
-            node.log("Furby-In:" + this.serialConfig.serialport +" " + this.serialConfig.serialbaud);
+            node.log("Furby-In:" + this.furbyConfig.serialport +" " + this.furbyConfig.serialbaud);
             
             var splitc;
             if (node.furbyConfig.newline.substr(0,2) == "0x") {
