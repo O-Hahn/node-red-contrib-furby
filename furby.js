@@ -233,6 +233,12 @@ module.exports = function(RED) {
             var node = this;
             node.tout = null;
             var buf;
+
+            // new furby object 
+        	var furby = {
+        			sensor : "none",
+        			value : ""
+                	}
             
             if (node.furbyConfig.out != "count") { buf = new Buffer(bufMaxSize); }
             else { buf = new Buffer(Number(node.furbyConfig.newline)); }
@@ -247,16 +253,19 @@ module.exports = function(RED) {
                 this.furbyConfig.stopbits,
                 this.furbyConfig.newline
             );
-
-            node.log("Furby-In:" + this.furbyConfig.serialport +" " + this.furbyConfig.serialbaud);
             
-            var splitc;
+            var splitc, splitclen,y;
+            
             if (node.furbyConfig.newline.substr(0,2) == "0x") {
                 splitc = new Buffer([parseInt(node.furbyConfig.newline)]);
             } else {
                 splitc = new Buffer(node.furbyConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
             }
 
+            this.log("Furby-in splitc:"+splitc);
+            splitclen = splitc.length();
+            splitcbuf = new Buffer(splitclen).fill("!");
+            
             this.port.on('data', function(msg) {
              	            	
                 // single char buffer --> payload direct
@@ -306,16 +315,14 @@ module.exports = function(RED) {
                     // look to match char... Real Furby communication
                     else if (node.furbyConfig.out === "char") {
                         buf[i] = msg;
-                        i += 1;
-                        if ((msg === splitc[0]) || (i === bufMaxSize)) {
-                        	// new furby object 
-                        	var furby = {
-                        			sensor : "none",
-                        			value : ""
-                                	}
+                        
+                        // necessary splitchars for compare
+                        splitcbuf.copy(splitcbuf, 0, 1);
+                        node.log("Furby-In:splitbuf:" + splitbuf);
+                        
+                        if ((splitcbuf === splitc) || (i === bufMaxSize)) {
                             // new buffer with answer object
                         	var n = new Buffer(i);
-
                                              	
                             // binary or ascii buffer 
                         	buf.copy(n,0,0,i);
@@ -342,6 +349,7 @@ module.exports = function(RED) {
                             	furby.sensor = "light";
                             	furby.value = n.substring(2);
                             }
+                            node.log("Furby-In:" + this.furbyConfig.serialport +" " + this.furbyConfig.serialbaud);
                             
                             node.send({"payload":n, "furby":furby});
                             n = null;
