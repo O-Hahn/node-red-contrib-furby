@@ -1,6 +1,6 @@
 {
     "name"         : "node-red-contrib-furby",
-    "version"      : "0.0.42",
+    "version"      : "0.0.43",
     "description"  : "Node Red Nodes for Watson/IoT Furby Demo on CeBit",
     "license"      : "Apache-2.0",
     "main"		   : "furby.js",

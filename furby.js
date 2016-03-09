@@ -265,6 +265,7 @@ module.exports = function(RED) {
             this.log("Furby-in splitc:"+splitc);
             splitclen = splitc.length;
             splitcbuf = new Buffer(splitclen).fill("!");
+            node.log("First Furby-In: splitclen:" + splitclen + " " + splitcbuf:" + splitcbuf);
             
             this.port.on('data', function(msg) {
              	            	
@@ -320,7 +321,7 @@ module.exports = function(RED) {
                         splitcbuf[splitclen-1] = msg;
                         if (splitclen > 1) { splitcbuf.copy(splitcbuf, 0, 1); } 
                         
-                        node.log("Furby-In:splitcbuf:" + splitcbuf);
+                        node.log("Furby-In: splitclen:" + splitclen + " splitcbuf:" + splitcbuf + "buffer: " + buf);
                         
                         if ((splitcbuf.compare(splitc) == 0) || (i === bufMaxSize)) {
                             // new buffer with answer object
