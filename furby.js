@@ -242,7 +242,8 @@ module.exports = function(RED) {
             
             if (node.furbyConfig.out != "count") { buf = new Buffer(bufMaxSize); }
             else { buf = new Buffer(Number(node.furbyConfig.newline)); }
-            var i = 0;
+
+        	var i = 0;
             
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
             
@@ -265,7 +266,7 @@ module.exports = function(RED) {
             this.log("Furby-in splitc:"+splitc);
             splitclen = splitc.length;
             splitcbuf = new Buffer(splitclen).fill("!");
-            node.log("First Furby-In: splitclen:" + splitclen + " splitcbuf:" + splitcbuf);
+            node.log("First Furby-In: " + splitc + " splitclen: "+ splitclen + " splitcbuf:" + splitcbuf.toString());
             
             this.port.on('data', function(msg) {
              	            	
@@ -316,12 +317,13 @@ module.exports = function(RED) {
                     // look to match char... Real Furby communication
                     else if (node.furbyConfig.out === "char") {
                         buf[i] = msg;
+                        i += 1;
                         
                         // set the buffer for compare incl. shift if necessary
                         splitcbuf[splitclen-1] = msg;
                         if (splitclen > 1) { splitcbuf.copy(splitcbuf, 0, 1); } 
                         
-                        node.log("Furby-In: splitclen:" + splitclen + " splitcbuf:" + splitcbuf + "buffer: " + buf);
+                        node.log("Furby-In: splitclen:" + splitclen + " splitcbuf:" + splitcbuf.toString() );
                         
                         if ((splitcbuf.compare(splitc) == 0) || (i === bufMaxSize)) {
                             // new buffer with answer object
