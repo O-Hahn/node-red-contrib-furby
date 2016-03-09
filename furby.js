@@ -254,7 +254,7 @@ module.exports = function(RED) {
                 this.furbyConfig.newline
             );
             
-            var splitc, splitclen,y;
+            var splitc, splitclen;
             
             if (node.furbyConfig.newline.substr(0,2) == "0x") {
                 splitc = new Buffer([parseInt(node.furbyConfig.newline)]);
@@ -263,7 +263,7 @@ module.exports = function(RED) {
             }
 
             this.log("Furby-in splitc:"+splitc);
-            splitclen = splitc.length();
+            splitclen = splitc.length;
             splitcbuf = new Buffer(splitclen).fill("!");
             
             this.port.on('data', function(msg) {
@@ -316,11 +316,13 @@ module.exports = function(RED) {
                     else if (node.furbyConfig.out === "char") {
                         buf[i] = msg;
                         
-                        // necessary splitchars for compare
-                        splitcbuf.copy(splitcbuf, 0, 1);
-                        node.log("Furby-In:splitbuf:" + splitbuf);
+                        // set the buffer for compare incl. shift if necessary
+                        splitcbuf[splitclen-1] = msg;
+                        if (splitclen > 1) { splitcbuf.copy(splitcbuf, 0, 1); } 
                         
-                        if ((splitcbuf === splitc) || (i === bufMaxSize)) {
+                        node.log("Furby-In:splitcbuf:" + splitcbuf);
+                        
+                        if ((splitcbuf.compare(splitc) == 0) || (i === bufMaxSize)) {
                             // new buffer with answer object
                         	var n = new Buffer(i);
                                              	
@@ -349,7 +351,6 @@ module.exports = function(RED) {
                             	furby.sensor = "light";
                             	furby.value = n.substring(2);
                             }
-                            node.log("Furby-In:" + this.furbyConfig.serialport +" " + this.furbyConfig.serialbaud);
                             
                             node.send({"payload":n, "furby":furby});
                             n = null;
