@@ -376,12 +376,12 @@ module.exports = function(RED) {
                         	
                             if (node.furbyConfig.bin !== "bin") { n = n.toString(); }
                             
-                            // write into log the message
-                            node.log("Furby in:" + n);
-                            
                             // cut split-char
                             if (splitc.length > 0) { n = n.slice(0,n.length-splitc.length+1); }
                             
+                            // write into log the message
+                            node.log("Furby in:" + n);
+                       
                             // Thonge pressed / released
                             if (n == "TP" || n == "TR") {
                             	furby.sensor = "thonge";
