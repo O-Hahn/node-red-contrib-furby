@@ -262,11 +262,6 @@ module.exports = function(RED) {
             } else {
                 splitc = new Buffer(node.furbyConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
             }
-
-            this.log("Furby-in splitc:"+splitc);
-            splitclen = splitc.length;
-            splitcbuf = new Buffer(splitclen).fill("!");
-            node.log("First Furby-In: " + splitc + " splitclen: "+ splitclen + " splitcbuf:" + splitcbuf.toString());
             
             this.port.on('data', function(msg) {
              	            	
@@ -318,19 +313,15 @@ module.exports = function(RED) {
                     else if (node.furbyConfig.out === "char") {
                         buf[i] = msg;
                         i += 1;
-                        
-                        // set the buffer for compare incl. shift if necessary
-                        splitcbuf[splitclen-1] = msg;
-                        if (splitclen > 1) { splitcbuf.copy(splitcbuf, 0, 1); } 
-                        
-                        node.log("Furby-In: splitclen:" + splitclen + " splitcbuf:" + splitcbuf.toString() );
-                        
-                        if ((splitcbuf.compare(splitc) == 0) || (i === bufMaxSize)) {
+                                                
+                        if ((msg === splitc[0]) || (i === bufMaxSize)) {
                             // new buffer with answer object
                         	var n = new Buffer(i);
                                              	
-                            // binary or ascii buffer 
-                        	buf.copy(n,0,0,i);
+                            // binary or ascii buffer & cut splitchar 
+                        	if (splitc.length > 0) {buf.copy(n,0,0,i-splitc.length); } 
+                        	else { buf.copy(n,0,0,i); }
+                        	
                             if (node.furbyConfig.bin !== "bin") { n = n.toString(); }
                             
                             // write into log the message
