@@ -390,7 +390,7 @@ module.exports = function(RED) {
                             }
                             
                             // Back pressed / released
-                            if (n. == "BP" || n. == "BR") {
+                            if (n == "BP" || n == "BR") {
                             	furby.sensor = "back";
                             	if (n == "BP") { furby.value = "pressed";} 
                             	else { furby.value = "released"; }
