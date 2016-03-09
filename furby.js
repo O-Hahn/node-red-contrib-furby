@@ -372,12 +372,10 @@ module.exports = function(RED) {
                         	var n = new Buffer(i);
                                              	
                             // binary or ascii buffer & cut splitchar 
-                        	buf.copy(n,0,0,i); 
+                        	if (splitc.length > 0) { buf.lcopy(n,0,0,i-splitc.length-1); }
+                        	else { buf.copy(n,0,0,i); }
                         	
                             if (node.furbyConfig.bin !== "bin") { n = n.toString(); }
-                            
-                            // cut split-char
-                            if (splitc.length > 0) { n = n.slice(0,n.length-splitc.length+1); }
                             
                             // write into log the message
                             node.log("Furby in:" + n);
