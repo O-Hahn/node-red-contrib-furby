@@ -372,8 +372,7 @@ module.exports = function(RED) {
                         	var n = new Buffer(i);
                                              	
                             // binary or ascii buffer & cut splitchar 
-                        	if (splitc.length > 0) { buf.lcopy(n,0,0,i-splitc.length-1); }
-                        	else { buf.copy(n,0,0,i); }
+                        	buf.copy(n,0,0,i);
                         	
                             if (node.furbyConfig.bin !== "bin") { n = n.toString(); }
                             
@@ -381,22 +380,22 @@ module.exports = function(RED) {
                             node.log("Furby in:" + n);
                        
                             // Thonge pressed / released
-                            if (n == "TP" || n == "TR") {
+                            if (n.substring(0,2) == "TP" || n.substring(0,2) == "TR") {
                             	furby.sensor = "thonge";
-                            	if (n == "TP") { furby.value = "pressed";} 
+                            	if (n.substring(0,2) == "TP") { furby.value = "pressed";} 
                             	else { furby.value = "released"; }
                             }
                             
                             // Back pressed / released
-                            if (n == "BP" || n == "BR") {
+                            if (n.substring(0,2) == "BP" || n.substring(0,2) == "BR") {
                             	furby.sensor = "back";
-                            	if (n == "BP") { furby.value = "pressed";} 
+                            	if (n.substring(0,2) == "BP") { furby.value = "pressed";} 
                             	else { furby.value = "released"; }
                             }
                             
                             if (n.substring(0,1) == "L")  {
                             	furby.sensor = "light";
-                            	furby.value = parseInt(n.substring(1));
+                            	furby.value = n.substring(1);
                             }
                             
                             node.send({"payload":n, "furby":furby});
