@@ -265,7 +265,7 @@ module.exports = function(RED) {
             this.log("Furby-in splitc:"+splitc);
             splitclen = splitc.length;
             splitcbuf = new Buffer(splitclen).fill("!");
-            node.log("First Furby-In: splitclen:" + splitclen + " " + splitcbuf:" + splitcbuf);
+            node.log("First Furby-In: splitclen:" + splitclen + " splitcbuf:" + splitcbuf);
             
             this.port.on('data', function(msg) {
              	            	
