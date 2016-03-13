@@ -148,7 +148,7 @@ module.exports = function(RED) {
             	fstate = msg.furby.state || node.state; 
             	femotion = msg.furby.emotion || node.emotion; 
             	farm = msg.furby.arm || node.arm;
-            	if (msg.furby.lightr) {
+            	if (!(msg.furby.lightr === "undifined")) {
             		flight = msg.furby.lightr.toString()+ msg.furby.lightg.toString() + msg.furby.lightb.toString();
             	} else {
                 	flight = node.rgblight || "000254000";            		
