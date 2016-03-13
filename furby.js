@@ -148,7 +148,11 @@ module.exports = function(RED) {
             	fstate = msg.furby.state || node.state; 
             	femotion = msg.furby.emotion || node.emotion; 
             	farm = msg.furby.arm || node.arm;
-            	flight = msg.furby.rgblight || node.rgblight || "000254000";
+            	if (msg.furby.lightr) {
+            		flight = msg.furby.lightr.toString()+ msg.furby.lightg.toString() + msg.furby.lightb.toString();
+            	} else {
+                	flight = node.rgblight || "000254000";            		
+            	}
             	
             	// set the right emotion - default = happy             	
         		if (femotion == "sad") {
