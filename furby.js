@@ -149,7 +149,7 @@ module.exports = function(RED) {
             	femotion = msg.furby.emotion || node.emotion; 
             	farm = msg.furby.arm || node.arm;
             	if (!(msg.furby.lightr === "undifined")) {
-            		flight = msg.furby.lightr.toString()+ msg.furby.lightg.toString() + msg.furby.lightb.toString();
+            		flight = msg.furby.lightr + msg.furby.lightg + msg.furby.lightb;
             	} else {
                 	flight = node.rgblight || "000254000";            		
             	}
