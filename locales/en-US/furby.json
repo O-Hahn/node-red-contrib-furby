@@ -25,6 +25,7 @@
             "red": "Red",
             "green":"Green",
             "blue": "Blue",
+            "choose": "Choose", 
             "none": "none"
         },
         "placeholder": {
