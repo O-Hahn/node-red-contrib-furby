@@ -66,9 +66,66 @@ function speakOutput(node, outStream) {
 	var rs = new Readable;
 	rs.push(outStream);
 	rs.push(null);
+	
+	rs.on("end", function() {
+		   // send file to output
+	    rs.pipe(speaker);	
+	}); 	
+     
+    return;
+};
+
+function speakOutputFile(outStream) {
+	var Sound = require('node-aplay');
+ 	var fs = require("fs-extra");
+ 	var os = require("os");
+ 	var uuid = require('node-uuid');
  	
-    // send file to output
-    rs.pipe(speaker);
+ 	var uuid = uuid.v4();
+ 	var filename = "/home/pi/.node-red/speak/speak-" + uuid +".wav";
+  	
+	var data = outStream;
+ 		
+ 	console.log("SpeakOutputFile:"+ filename);
+ 	
+	if ((typeof data === "object") && (!Buffer.isBuffer(data))) {
+ 			 data = JSON.stringify(data);
+		}
+    if (typeof data === "boolean") { data = data.toString(); }
+    if (typeof data === "number") { data = data.toString(); }
+    if (!Buffer.isBuffer(data)) { data += os.EOL; }
+         
+    data = new Buffer(data);
+          
+     // using "binary" not {encoding:"binary"} to be 0.8 compatible for a while
+     fs.writeFile(filename, data, "binary", function (err) {
+         if (err) {
+             if (err.code === "ENOENT") {
+                 fs.ensureFile(filename, function (err) {
+                     if (err) { 
+                     	console.error("Furby Speak (err): File "+ filename + " could not be created");
+                     }
+                     else {
+                         fs.writeFile(filename, data, "binary", function (err) {
+                             if (err) { 
+                             	console.error("Furby Speak (err): File " + filename + " could not be written to");
+                             	}
+                         });
+                     }
+                 });
+             }
+             else { 
+             	console.error("Furby Speak (err): error writing " + err);
+             }
+         }
+         else { 
+         	console.log("Furby Speak (log): File " + filename + " written.");
+         	}
+     });
+
+	// fire and forget: 
+	new Sound(filename).play();
+
 };
 
 module.exports = function(RED) {
@@ -122,6 +179,7 @@ module.exports = function(RED) {
 		this.lightg = config.lightg;
 		this.lightb = config.lightb;		
 		this.rgblight = config.lightr.toString()+ config.lightg.toString() + config.lightb.toString();
+		this.choose = config.choose;
 		this.name =  config.name;
 
 		var node = this;
@@ -196,7 +254,8 @@ module.exports = function(RED) {
     			if (fstate == "talk") {
     				// check if speech is filled or standard-sound given
     				if (msg.furby.speech) {
-        				speakOutput(node, msg.furby.speech);    					
+    					if (node.choose == "filebased") { speakOutputFile(msg.furby.speech); }
+    					else { speakOutput(node, msg.furby.speech);   }     				   					
     				}
     			}
             });

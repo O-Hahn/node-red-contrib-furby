@@ -120,6 +120,13 @@
         <label for="node-input-lightb" style="width: auto"> <span data-i18n="furby.label.blue"></span></label>
         <input type="text" id="node-input-lightb" style="width: 50px">
     </div>
+    <div class="form-row node-input-choose">
+         <label for="node-input-choose"><i class="fa fa-music"></i> <span data-i18n="speakerpi.label.choose"></span></label>
+	     <select id="node-input-choose">
+            <option value="filebased">File based</option>
+            <option value="streambased">Stream based</option>
+        </select>
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="furby.label.name"></span></label>
         <input type="text" id="node-input-name">
@@ -151,6 +158,7 @@
             lightr : {value:"000", required:true},
             lightg : {value:"000", required:true},
             lightb : {value:"000", required:true},
+            choose : {value: "filebased", required:true }
             name: {value:""}
         },
         inputs:1,
