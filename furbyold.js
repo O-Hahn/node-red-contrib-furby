@@ -16,14 +16,6 @@
  *    - Olaf Hahn
  **/
 
-    // Furby Input
-
---> serial ionput
-
-    
-    ..> orig
-
-
 
 module.exports = function(RED) {
     "use strict";
